@@ -164,17 +164,35 @@ def getRecommendedItems(prefs,itemMatch,user):
   rankings.reverse( )
   return rankings
 
-def loadMovieLens(path='/data/movielens'):
+def loadMovieLens(path=''):
+  import csv
   # Get movie titles
   movies={}
-  for line in open(path+'/u.item'):
-    (id,title)=line.split('|')[0:2]
-    movies[id]=title
-  
+
+
+  # The previous codes. If you insist to check if it works.. xD
+  # for line in open(path + 'movies.data') :
+  #   (id, title)=line.split(',')[0:2]
+  #   movies[id]=title
+
+  #CSV data reader.. Newer dataset is in CSV format which wont work with the previous codes.
+  reader =csv.reader(open(path + 'movies.csv', 'r'))
+  for row in reader:
+    k, v, l = row
+    movies[k] = v
+
   # Load data
   prefs={}
-  for line in open(path+'/u.data'):
-    (user,movieid,rating,ts)=line.split('\t')
-    prefs.setdefault(user,{})
-    prefs[user][movies[movieid]]=float(rating)
+  #latest csv reader module
+  dataReader= csv.reader(open(path + 'ratings.csv', 'r'))
+  for row in dataReader:
+    user, movieid, rating, ts = row
+    prefs.setdefault(user, {})
+    prefs[user][movies[movieid]] = float(rating)
+
+  # read line 176 again
+  # for line in open(path+'ratings.csv'):
+  #   (user,movieid,rating,ts)=line.split(',')
+  #   prefs.setdefault(user,{})
+  #   prefs[user][movies[movieid]]=float(rating)
   return prefs
